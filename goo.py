@@ -6,6 +6,8 @@ import MySQLdb
 import json
 import time
 from datetime import datetime
+from sendmail import Sendmail
+
 
 
 #连接数据库
@@ -120,8 +122,10 @@ def Conn(data):
 			#关闭指针和连接
 			cur.close()
 			conn.close()
+
+		
 	except:
-		print('SASASASA')
+		print('ERROR')
 		cur.close()
 		conn.close()
 
@@ -132,7 +136,7 @@ def DataAPI(url):
 	#这里有Python3在请求里添加header的方法
 	
 	req = urllib.request.Request(url) #请求网页
-	req.add_header('apikey', 'apikey填在这里') #添加header
+	req.add_header('apikey', 'APIkey放这里') #添加header
 	
 	resp = urllib.request.urlopen(req).read().decode('utf-8') #获得数据
 
@@ -149,8 +153,8 @@ def DataAPI(url):
 	else:
 		print(str(data['errNum']) + ':' + data['errMsg'])
 
-	now = str(datetime.now())
-	print('运行中.....' + now)
+	print('运行中.....' +Now())
+	#Sendmail('连接测试..... %s ' % Now())
 	time.sleep(3)
 
 
@@ -168,15 +172,26 @@ def Get_sz_data(url, lis):
 		url_data = url + 'sz' + str(code.zfill(6)) + lis #zfill()给数字前面补0
 		DataAPI(url_data)
 
-
+def Now():
+	return str(datetime.now())[:19]
 
 #每日分析，筛选。发送邮件到指定邮箱
+#运行日志功能待添加
+
+
 
 if __name__ == '__main__':
 
-	#还有定时运行功能没做
+	
 	target = 'http://apis.baidu.com/apistore/stockservice/stock?stockid='
 	lis = '&list=0'
 	#DataAPI(' http://apis.baidu.com/apistore/stockservice/stock?stockid=sh600005&list=0')
-	Get_sh_data(target, lis)
-	Get_sz_data(target, lis)
+	while 1:
+
+		#定时运行,每天凌晨00:00开始采集数据
+		run_time = Now()[11:16]
+		if run_time == '00:00':
+			Get_sh_data(target, lis)
+			Get_sz_data(target, lis)
+			Sendmail('数据采集工作已于 %s 完成' % Now())
+		time.sleep(50)

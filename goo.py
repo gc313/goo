@@ -12,8 +12,7 @@ import logging
 
 #在当前目录下生成日志文件，并设置日志的等级、格式
 #logging 功能还挺多，先简单做一做，以后再慢慢看这个模块
-logging.basicConfig(filename = 'log.log'), 
-	level = logging.INFO, filemode = 'w', format = '%(asctime)s - %(levelname)s : %(message)s')
+logging.basicConfig(filename = 'log.log', level = logging.INFO, filemode = 'w', format = '%(asctime)s - %(levelname)s : %(message)s')
 
 
 #连接数据库

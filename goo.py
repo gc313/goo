@@ -192,7 +192,7 @@ def DataAPI(url):
 			Conn(goo)#连接数据库
 
 	else:
-		logging.info(str(data['errNum']) + ':' + data['errMsg'])
+		logging.debug(str(data['errNum']) + ':' + data['errMsg'])
 		#print(str(data['errNum']) + ':' + data['errMsg'])
 
 
@@ -242,15 +242,15 @@ if __name__ == '__main__':
 
 			#定时运行,每天凌晨00:00开始采集数据
 			run_time = Now()[11:16]
-			#if run_time == '00:00':
-			if 1:
+			if run_time == '00:00':
+			#if 1:
 				logging.info('开始采集数据')
 				#加个计数功能，记录每天插入了多少条记录
 
 				sh_count = 0
 				sz_count = 0
 
-				#Get_sh_data(target, lis)
+				Get_sh_data(target, lis)
 				Get_sz_data(target, lis)
 				Sendmail('数据采集工作已于 %s 完成，沪市A股采集数据%s条，深市A股采集数据%s条。' % (Now(), sh_count, sz_count))
 				logging.info('数据采集完成')

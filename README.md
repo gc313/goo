@@ -1,6 +1,6 @@
 # goo
 [![Code Health](https://landscape.io/github/gc313/goo/master/landscape.svg?style=flat)](https://landscape.io/github/gc313/goo/master)
-[![Environment](https://img.shields.io/badge/python-3.4, 3.5-blue.svg)
+![Environment](https://img.shields.io/badge/python-3.4, 3.5-green.svg)
 爬取A股数据
 -----------------
 Python虐我千百遍，我待Python如初恋。

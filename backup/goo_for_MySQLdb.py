@@ -2,19 +2,13 @@
 
 #因为我是个菜得不行的菜鸟，担心以后就忘了，所以注释会有点多
 import urllib.request
-#import MySQLdb
-import pymysql
+import MySQLdb
+#import pymysql
 import json
 import time
 from datetime import datetime
 from sendmail import Sendmail
-import logging
-import os
 
-#在当前目录下生成日志文件，并设置日志的等级、格式
-#logging 功能还挺多，先简单做一做，以后再慢慢看这个模块
-logging.basicConfig(filename = os.path.join(os.getcwd(), 'log.log'), 
-	level = logging.INFO, filemode = 'w', format = '%(asctime)s - %(levelname)s : %(message)s')
 
 
 #连接数据库
@@ -41,16 +35,11 @@ def Conn(data):
 	-------------------------------------------------------------------------------------------
 	但是现在树莓派上面还找不到python3-MySQLdb的安装源，所以我准备换用
 	pyMySQL，搞不好又要被编码虐一遍。
-	...
-	……结果在Ubuntu上异常的顺利，不知树莓派如何
 	'''
-	#申明全局变量
-	global sh_count, sz_count
-
 	try:
 	
 
-		'''
+		
 		#用MySQLdb时亲测可行的方法
 		conn = MySQLdb.Connect('192.168.0.102', 'root', '1123')
 		conn.set_character_set('utf8')
@@ -59,17 +48,12 @@ def Conn(data):
 		cur.execute('SET NAMES utf8;')
 		cur.execute('SET CHARACTER SET utf8;')
 		cur.execute('SET character_set_connection=utf8;')
-		'''
+		
 		#pyMySQL
-		conn = pymysql.connect(user = 'root', passwd = '1123', host = '192.168.0.102', charset = 'utf8')
-		cur = conn.cursor()
 
 		#判断数据库是否存在，如果数据库不存在则建立,并使用该数据库，语句是网上抄的……
 		if not cur.execute('SELECT * FROM information_schema.SCHEMATA where SCHEMA_NAME="goo"'):
-			#创建数据库，goo两边是 ` `，不是'  '或"  "
 			cur.execute('CREATE DATABASE `goo` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci')
-			logging.info('已建立数据库')
-
 
 		cur.execute('USE goo')
 	
@@ -108,17 +92,13 @@ def Conn(data):
 				'sell4 int(10), sell4_p float(8), '+
 				'sell5 int(10), sell5_p float(8) )'
 				)
-			
-			logging.debug('已创建表%s' % t_name)
 
 
 		#插入数据
 		date_w = sql_w['date'] + ' ' + sql_w['time']
 
-		#先检查目标表中最后一行数据，是否存在同一时间的数据，如有便跳过（还未修改这里，好像暂时也不必要）
+		#先检查目标表中最后一行数据，是否存在同一时间的数据，如有便跳过（还未修改这里）
 
-		#检查是否有相同日期时间的数据，如有则跳过
-		logging.debug(cur.execute('SELECT * FROM %s WHERE d_date = "%s" ' % (sql_w['code'], date_w)))
 		if not cur.execute('SELECT * FROM %s WHERE d_date = "%s" ' % (sql_w['code'], date_w)):
 
 			#这里也坑死我了，字符串的字段两边也是有引号的，是有引号的，是有引号的！数值字段两边则没有
@@ -148,27 +128,15 @@ def Conn(data):
 				sql_w['sellFour'], sql_w['sellFourPrice'], 
 				sql_w['sellFive'], sql_w['sellFivePrice'])
 				)
-			logging.debug('已插入%s %s的数据' % (sql_w['name'],date_w))
-
-			if t_name[:2] == 'sh':
-				sh_count += 1
-			else:
-				sz_count += 1
-			
 			#提交
 			conn.commit()
 			#关闭指针和连接
 			cur.close()
 			conn.close()
-		else:
-			cur.close()
-			conn.close()
-			logging.debug('数据表中已有相同数据，跳过')
 
 		
-	except Exception as e:
-		logging.error('%s' % e)
-
+	except:
+		print('ERROR')
 		cur.close()
 		conn.close()
 
@@ -194,11 +162,9 @@ def DataAPI(url):
 			Conn(goo)#连接数据库
 
 	else:
-		logging.info(str(data['errNum']) + ':' + data['errMsg'])
-		#print(str(data['errNum']) + ':' + data['errMsg'])
+		print(str(data['errNum']) + ':' + data['errMsg'])
 
-
-	logging.debug('运行中……')
+	print('运行中.....' +Now())
 	#Sendmail('连接测试..... %s ' % Now())
 	time.sleep(3)
 
@@ -214,7 +180,7 @@ def Get_sh_data(url, lis):
 
 def Get_sz_data(url, lis):
 	for code in range(1, 1000):
-		url_data = url + 'sz' + str(code).zfill(6) + lis #zfill()给字符串类型的数字前面补0
+		url_data = url + 'sz' + str(code.zfill(6)) + lis #zfill()给数字前面补0
 		DataAPI(url_data)
 
 def Now():
@@ -227,40 +193,16 @@ def Now():
 
 if __name__ == '__main__':
 
-
 	
 	target = 'http://apis.baidu.com/apistore/stockservice/stock?stockid='
 	lis = '&list=0'
+	#DataAPI(' http://apis.baidu.com/apistore/stockservice/stock?stockid=sh600005&list=0')
+	while 1:
 
-	'''
-	#测试用
-	sh_count = 0
-	DataAPI(' http://apis.baidu.com/apistore/stockservice/stock?stockid=sh600663&list=0')
-	logging.info('插入数据%s条' % sh_count)
-	'''
-	try:
-		logging.info('程序运行')
-		while 1:
-
-			#定时运行,每天凌晨00:00开始采集数据
-			run_time = Now()[11:16]
-			#if run_time == '00:00':
-			if 1:
-				logging.info('开始采集数据')
-				#加个计数功能，记录每天插入了多少条记录
-
-				sh_count = 0
-				sz_count = 0
-
-				#Get_sh_data(target, lis)
-				Get_sz_data(target, lis)
-				Sendmail('数据采集工作已于 %s 完成，沪市A股采集数据%s条，深市A股采集数据%s条。' % (Now(), sh_count, sz_count))
-				logging.info('数据采集完成')
-			time.sleep(50)
-	except Exception as e:
-		logging.error('%s' % e)
-		Sendmail('%s 程序报错：%s ' % (Now(), e))
-	finally:
-		Sendmail('程序已结束运行 at %s ' % Now())
-		logging.info('程序结束运行')
-	
+		#定时运行,每天凌晨00:00开始采集数据
+		run_time = Now()[11:16]
+		if run_time == '00:00':
+			Get_sh_data(target, lis)
+			Get_sz_data(target, lis)
+			Sendmail('数据采集工作已于 %s 完成' % Now())
+		time.sleep(50)

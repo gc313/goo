@@ -177,7 +177,7 @@ def DataAPI(url):
 	#这里有Python3在请求里添加header的方法
 	
 	req = urllib.request.Request(url) #请求网页
-	req.add_header('apikey', '9aeaa70065a1053db38cc4657f33ba64') #添加header
+	req.add_header('apikey', 'APIkey放这里') #添加header
 	
 	resp = urllib.request.urlopen(req).read().decode('utf-8') #获得数据
 

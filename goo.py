@@ -9,11 +9,10 @@ import time
 from datetime import datetime
 from sendmail import Sendmail
 import logging
-import os
 
 #在当前目录下生成日志文件，并设置日志的等级、格式
 #logging 功能还挺多，先简单做一做，以后再慢慢看这个模块
-logging.basicConfig(filename = os.path.join(os.getcwd(), 'log.log'), 
+logging.basicConfig(filename = 'log.log'), 
 	level = logging.INFO, filemode = 'w', format = '%(asctime)s - %(levelname)s : %(message)s')
 
 
@@ -41,8 +40,7 @@ def Conn(data):
 	-------------------------------------------------------------------------------------------
 	但是现在树莓派上面还找不到python3-MySQLdb的安装源，所以我准备换用
 	pyMySQL，搞不好又要被编码虐一遍。
-	...
-	……结果在Ubuntu上异常的顺利，不知树莓派如何
+	...……结果在Ubuntu上异常的顺利，不知树莓派如何
 	'''
 	#申明全局变量
 	global sh_count, sz_count
@@ -58,8 +56,9 @@ def Conn(data):
 		cur = conn.cursor()
 		cur.execute('SET NAMES utf8;')
 		cur.execute('SET CHARACTER SET utf8;')
-		cur.execute('SET character_set_connection=utf8;')
+		cur.execute('SET character_set_connection=utf8;') 
 		'''
+
 		#pyMySQL
 		conn = pymysql.connect(user = 'root', passwd = '1123', host = '192.168.0.102', charset = 'utf8')
 		cur = conn.cursor()

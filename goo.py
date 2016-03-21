@@ -12,7 +12,7 @@ import logging
 
 #在当前目录下生成日志文件，并设置日志的等级、格式
 #logging 功能还挺多，先简单做一做，以后再慢慢看这个模块
-logging.basicConfig(filename = 'log.log', level = logging.INFO, filemode = 'w', format = '%(asctime)s - %(levelname)s : %(message)s')
+logging.basicConfig(filename = 'log.log', level = logging.DEBUG, filemode = 'w', format = '%(asctime)s - %(levelname)s : %(message)s')
 
 
 #连接数据库
@@ -59,7 +59,18 @@ def Conn(data):
 		'''
 
 		#pyMySQL
-		conn = pymysql.connect(user = 'root', passwd = '1123', host = '192.168.0.102', charset = 'utf8')
+		cone = 0
+		while cone < 5:
+
+			try:
+				conn = pymysql.connect(user = 'root', passwd = '1123', host = '192.168.0.102', charset = 'utf8')
+				break
+			except Exception as e:
+				logging.error('连接错误 %s' % e)
+				cone += 1
+				continue
+
+		
 		cur = conn.cursor()
 
 		#判断数据库是否存在，如果数据库不存在则建立,并使用该数据库，语句是网上抄的……
@@ -177,7 +188,7 @@ def DataAPI(url):
 	#这里有Python3在请求里添加header的方法
 	
 	req = urllib.request.Request(url) #请求网页
-	req.add_header('apikey', 'APIkey放这里') #添加header
+	req.add_header('apikey', '9aeaa70065a1053db38cc4657f33ba64') #添加header
 	
 	resp = urllib.request.urlopen(req).read().decode('utf-8') #获得数据
 
@@ -233,7 +244,7 @@ if __name__ == '__main__':
 	'''
 	#测试用
 	sh_count = 0
-	DataAPI(' http://apis.baidu.com/apistore/stockservice/stock?stockid=sh600663&list=0')
+	DataAPI('http://apis.baidu.com/apistore/stockservice/stock?stockid=sh600663&list=0')
 	logging.info('插入数据%s条' % sh_count)
 	'''
 	try:
@@ -242,8 +253,8 @@ if __name__ == '__main__':
 
 			#定时运行,每天凌晨00:00开始采集数据
 			run_time = Now()[11:16]
-			if run_time == '00:00':
-			#if 1:
+			#if run_time == '00:00':
+			if 1:
 				logging.info('开始采集数据')
 				#加个计数功能，记录每天插入了多少条记录
 

@@ -14,8 +14,8 @@ def Sendmail(message):
 	
 	today = str(date.today())
 	from_addr = 'big_sister@yeah.net'
-	paswd = 'mima15987532'
-	to_addr = 'gc313@qq.com'
+	paswd = '****password'
+	to_addr = '***@qq.com'
 	smtp_server = 'smtp.yeah.net'
 	
 

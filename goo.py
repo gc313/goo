@@ -12,7 +12,7 @@ import logging
 
 #在当前目录下生成日志文件，并设置日志的等级、格式
 #logging 功能还挺多，先简单做一做，以后再慢慢看这个模块
-logging.basicConfig(filename = 'log.log', level = logging.DEBUG, filemode = 'w', format = '%(asctime)s - %(levelname)s : %(message)s')
+logging.basicConfig(filename = 'log.log', level = logging.INFO, filemode = 'w', format = '%(asctime)s - %(levelname)s : %(message)s')
 
 
 #连接数据库
@@ -253,8 +253,8 @@ if __name__ == '__main__':
 
 			#定时运行,每天凌晨00:00开始采集数据
 			run_time = Now()[11:16]
-			#if run_time == '00:00':
-			if 1:
+			if run_time == '00:00':
+			#if 1:
 				logging.info('开始采集数据')
 				#加个计数功能，记录每天插入了多少条记录
 
